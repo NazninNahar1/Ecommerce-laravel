@@ -14,7 +14,7 @@ return [
     /*
      * Whether this service should allow data modification requests. Set to true by default just for safety.
      */
-    'readonly' => true,
+    'readonly' =>false,
 
     /*
      * Set this to true if you want to use Laravel authorization gates for your OData requests.
