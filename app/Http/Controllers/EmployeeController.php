@@ -6,22 +6,21 @@ use App\Enums\Gender;
 use App\Http\Requests\StoreEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Model\Employee;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 use Exception;
+use Ramsey\Uuid\Type\Integer;
 
 class EmployeeController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         return Employee::all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+
     public function create()
     {
         //
@@ -32,33 +31,6 @@ class EmployeeController extends Controller
     {
 
         try {
-            $request->validate([
-                'emp_nr' => 'required|string',
-                'emp_name' => 'required|string',
-                'emp_user_name' => 'required|string',
-                'emp_company' => 'required|string',
-                'password' => 'string',
-                'email' => 'nullable|email|unique:employees,email',
-                'comment' => 'string',
-                'weekly_hours' => 'numeric',
-                'contraction' => 'string',
-                'nfc_chip_number' => 'string',
-                'is_active' => 'boolean',
-                'is_leanVisu' => 'boolean',
-                'is_supervisor_flag' => 'boolean',
-                'entry' => 'nullable|date',
-                'exit' => 'nullable|date',
-                'date_of_birth' => 'nullable|date',
-                'supervisor_name' => 'string',
-                'ages' => 'string',
-                'emp_art' => 'string',
-                'area' => 'string',
-                'department_ma' => 'string',
-                'hall_nr' => 'string',
-                'assigned_role' => 'string',
-                'machine_group' => 'string',
-                'gender' => 'required|string',
-            ]);
 
 
 
@@ -72,6 +44,7 @@ class EmployeeController extends Controller
             $employee->emp_name = $request->input('emp_name');
             $employee->emp_user_name = $request->input('emp_user_name');
             $employee->emp_company = $request->input('emp_company');
+            $employee->department_id = $request->input('department_id');
 
             $employee->password = $request->input('password');
             $employee->email = $request->input('email');
@@ -112,8 +85,16 @@ class EmployeeController extends Controller
      * Display the specified resource.
      */
     public function show(Employee $employee)
+
     {
-        //
+        $employees = Employee::select ('emp_company')
+        ->get();
+
+        return response()->json([
+            'message' => 'EmplyeeInformation Updated',
+            'status' => 'success',
+            'data' => $employees
+        ]);
     }
 
     /**
@@ -129,18 +110,12 @@ class EmployeeController extends Controller
      */
     public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
-
-       
-
         try {
             $employee->emp_nr = $request->input('emp_nr');
             $employee->emp_name = $request->input('emp_name');
             $employee->emp_user_name = $request->input('emp_user_name');
             $employee->emp_company = $request->input('emp_company');
-
             $employee->password = $request->input('password');
-
-
 
             $employee->email = $request->input('email');
             $employee->comment = $request->input('comment');
@@ -164,7 +139,7 @@ class EmployeeController extends Controller
             $employee->assigned_role = $request->input('assigned_role');
             $employee->machine_group = $request->input('machine_group');
             $employee->gender = $request->input('gender');
-            $employee->save();
+            $employee->update();
         } catch (Exception $exception) {
             dd($exception);
         }
@@ -176,14 +151,39 @@ class EmployeeController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+
     public function destroy(Employee $employee)
     {
         $employee->delete();
         return response()->json([
             'message' => 'Successfully deleted Selected Employee!'
         ]);
+    }
+    public function search(Request $request)
+    {
+        // dd("Hello");
+
+        try {
+
+            // print_r($request->company);
+            // exit(1);
+
+            $query = $request->company;
+
+
+            $employees = Employee::where('emp_company', 'like', "%$query%")
+                ->get();
+            $count = $employees->count();
+
+            return response()->json([
+                'items' => $employees,
+                'query' => $query,
+                'count' => $count,
+
+            ]);
+        } catch (\Throwable $th) {
+            Log::error($th);
+            throw $th;
+        }
     }
 }

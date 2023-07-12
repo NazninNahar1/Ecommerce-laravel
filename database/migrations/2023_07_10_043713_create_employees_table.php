@@ -1,14 +1,12 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+
     public function up(): void
     {
         Schema::create('employees', function (Blueprint $table) {
@@ -18,6 +16,7 @@ return new class extends Migration
             $table->string('emp_name');
             $table->string('emp_user_name');
             $table->string('emp_company');
+            $table->foreignId('department_id')->constrained()->cascadeOnDelete();
             //optional
             $table->string('password');
             $table->string('email')->unique();
@@ -44,8 +43,6 @@ return new class extends Migration
             $table->string('assigned_role')->nullable();
             $table->string('machine_group')->nullable();
             $table->string('gender')->nullable();
-
-
             $table->timestamps();
         });
     }

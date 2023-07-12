@@ -5,17 +5,13 @@ namespace App\Models\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Flat3\Lodata\Attributes\LodataRelationship;
-use App\Models\Model\Product;
 
-
-class Review extends Model
+class Department extends Model
 {
     use HasFactory;
-
     #[LodataRelationship]
-    public function departments()
+    public function employees()
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(Employee::class);
     }
-
 }
