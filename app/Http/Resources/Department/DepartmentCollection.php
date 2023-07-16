@@ -15,10 +15,14 @@ class DepartmentCollection extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            "dept"=>$this->dept_name,
-            "employees"=>[
-                'employees'=>$this->employees
-            ]
+            "role"=>$this->dept_name,
+
+                'employeeslists'=>$this->employees
+
+
+            // "employees"=>[
+            //     'employeeslist'=>$this->employees
+            // ]
 
         ];
     }
